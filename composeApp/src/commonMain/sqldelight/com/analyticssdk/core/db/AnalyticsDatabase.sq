@@ -1,0 +1,20 @@
+-- Tabloyu Oluşturuyoruz
+CREATE TABLE EventEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    eventName TEXT NOT NULL,
+    parameters TEXT NOT NULL,
+    timestamp INTEGER NOT NULL
+);
+
+insertEvent:
+INSERT INTO EventEntity(id, eventName, parameters, timestamp)
+VALUES (?, ?, ?, ?);
+
+getBatch:
+SELECT * FROM EventEntity
+ORDER BY timestamp ASC
+LIMIT ?;
+
+deleteEvents:
+DELETE FROM EventEntity
+WHERE id IN ?;
