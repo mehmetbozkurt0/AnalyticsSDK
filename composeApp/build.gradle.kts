@@ -1,3 +1,4 @@
+import java.util.Properties
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -6,7 +7,8 @@ plugins {
 }
 
 kotlin {
-    // Sorun çıkaran compilerOptions kısmını sildik, sadece metodun kendisi kaldı
+    jvmToolchain(17)
+
     androidTarget()
 
     jvm()
@@ -32,6 +34,12 @@ kotlin {
     }
 }
 
+val properties = Properties()
+val propertiesFile = project.rootProject.file("local.properties")
+if (propertiesFile.exists()) {
+    propertiesFile.inputStream().use { properties.load(it) }
+}
+
 android {
     namespace = "com.analyticssdk.core"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -42,11 +50,12 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL")}\"")
+        buildConfigField("String", "SUPABASE_KEY", "\"${properties.getProperty("SUPABASE_KEY")}\"")
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+    buildFeatures {
+        buildConfig = true
     }
 }
 

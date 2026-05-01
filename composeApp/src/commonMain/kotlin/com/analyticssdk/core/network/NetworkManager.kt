@@ -41,7 +41,7 @@ class NetworkManager(
             response.status.isSuccess()
 
         } catch (e: Exception) {
-            println("Analytics Gönderim Hatası: ${e.message}")
+            println("AnalyticsSDK: Sent error: ${e.message}")
             false
         }
     }

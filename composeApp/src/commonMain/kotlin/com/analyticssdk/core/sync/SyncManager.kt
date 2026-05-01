@@ -29,6 +29,7 @@ class SyncManager(
                 }
             }catch (e: Exception) {
                 println("AnalyticsSDK: Synchronization error, ${e.message}")
+                println("Hata Detayı: ${e.message}")
             }
         }
     }
