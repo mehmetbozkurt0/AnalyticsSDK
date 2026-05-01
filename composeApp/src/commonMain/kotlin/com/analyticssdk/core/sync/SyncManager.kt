@@ -28,8 +28,8 @@ class SyncManager(
                     println("AnalyticsSDK: An error occurred during data sending. It will be trying to send again when device connected to internet.")
                 }
             }catch (e: Exception) {
-                println("AnalyticsSDK: Synchronization error, ${e.message}")
-                println("Hata Detayı: ${e.message}")
+                println("AnalyticsSDK: Sync failed for event. Error: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
