@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.sqldelight)
     kotlin("plugin.serialization") version "1.9.22"
+    id("maven-publish")
 }
 
 kotlin {
@@ -63,6 +64,16 @@ sqldelight {
     databases {
         create("AnalyticsDatabase"){
             packageName.set("com.analyticssdk.core.db")
+        }
+    }
+}
+
+publishing {
+    publications {
+        withType<MavenPublication> {
+            groupId = "com.analyticssdk"
+            artifactId = "core"
+            version = "1.0.0"
         }
     }
 }
