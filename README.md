@@ -1,42 +1,96 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop (JVM).
+# Analytics SDK (Kotlin Multiplatform)
+A lightweight, robust, and offline-first Analytics SDK built with Kotlin Multiplatform (KMP). Designed to seamlessly track user events and screen durations across Android and Desktop (JVM) applications with built-in network resilience.
+<br> </br>
+## ✨ Features
+* **Offline-First Architecture:** Utilizes SQLDelight and SQLite to safely store events locally when the device is offline.
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-    - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-      Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-      folder is the appropriate location.
+* **Auto-Synchronization:** Automatically batches and syncs local data to your backend (e.g., Supabase) via Ktor once the network is available.
 
-### Build and Run Android Application
+* **Automatic Device Context:** Automatically injects device information (OS name, OS version, device model, and manufacturer) into every event payload.
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
+* **Screen Duration Tracking:** Easily track how long a user stays on a specific screen with auto-calculated duration metrics.
 
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+* **KMP Ready:** Share the exact same analytics logic across Android and JVM (Desktop) targets.
+<br> </br>
+## 📦 Installation
+### Step 1. Add the JitPack repository
+In your root settings.gradle.kts or project level build.gradle.kts:
+```kotlin
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+```
+### Step 2. Add the dependency
+Add the following to your App module's build.gradle.kts:
 
-### Build and Run Desktop (JVM) Application
+```kotlin
+dependencies {
+    implementation("com.github.mehmetbozkurt0:analyticssdk:1.0.1")
+}
+```
+<br> </br>
+## 💡 Backend Compatibility Note
+While the current version is optimized for **Supabase** (using specific headers for `apikey` and `Authorization`), this SDK is designed to be flexible. You can use it with any backend service that can receive a standard HTTP POST request with the following JSON payload:
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
+```json
+{
+  "id": "event_id",
+  "event_name": "event_name",
+  "timestamp": 123456789,
+  "parameters": { "key": "value" }
+}
+```
 
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+If your backend requires different authentication headers or a different JSON schema, the current NetworkManager can be easily adapted or extended in future versions.
 
----
+<br> </br>
+## 🚀 Usage
+Initialize the SDK once at the entry point of your application.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+```kotlin
+import com.analyticssdk.core.Analytics
+import com.analyticssdk.core.storage.DriverFactory
+
+Analytics.init(
+    driverFactory = DriverFactory(context), 
+    url = "https://YOUR_PROJECT_ID.supabase.co/rest/v1/events",
+    apiKey = "YOUR_API_KEY"
+)
+```
+
+
+Track specific user actions. Device info and timestamps are appended automatically.
+
+```kotlin
+Analytics.logEvent(
+    eventName = "purchase_completed",
+    parameters = mapOf(
+        "item_id" to "12345",
+        "price" to "19.99"
+    )
+)
+```
+
+
+The SDK automatically calculates the duration and fires a screen_view event upon exit.
+```kotlin
+// When the user enters:
+Analytics.logScreenEnter("Home_Screen")
+
+// When the user leaves:
+Analytics.logScreenExit("Home_Screen")
+```
+<br> </br>
+## 🛠 Tech Stack
+* Kotlin Multiplatform
+
+* Ktor (Networking)
+
+* SQLDelight (Local Database)
+
+* Coroutines (Asynchronous Programming)
