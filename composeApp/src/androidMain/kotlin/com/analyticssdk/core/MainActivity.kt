@@ -3,7 +3,11 @@ package com.analyticssdk.core
 import android.app.Activity
 import android.os.Bundle
 import com.analyticssdk.core.storage.DriverFactory
-// BuildConfig hata verirse Alt+Enter ile import et
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,9 +24,15 @@ class MainActivity : Activity() {
             eventName = "hayalet_test_basarili",
             parameters = mapOf(
                 "durum" to "arayüzsüz çalıştı",
-                "hedef" to "staj_cepte"
+                "hedef" to "loglar yazdırılıyor"
             )
         )
+
+        CoroutineScope(Dispatchers.Default).launch {
+            Analytics.logScreenEnter("Ana_Ekran")
+            delay(3000)
+            Analytics.logScreenExit("Ana_Ekran")
+        }
 
         println("🚀 Analytics SDK: Uygulama açıldı ve test verisi fırlatıldı!")
     }
